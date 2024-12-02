@@ -1,6 +1,5 @@
 import React from 'react';
 import { TrendingUp, AlertTriangle, Clock, Package } from 'lucide-react';
-import StatsCard from './StatsCard';
 import { OptimizationResult } from '../../types';
 
 interface StatsGridProps {
@@ -16,29 +15,45 @@ export default function StatsGrid({ result, totalItems }: StatsGridProps) {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Current Stats</h2>
-      <div className="grid grid-cols-2 gap-4">
-        <StatsCard
-          title="Total Items"
-          value={formatValue(totalItems)}
-          icon={<Package className="w-4 h-4" />}
-        />
-        <StatsCard
-          title="Distribution"
-          value={formatValue(result.recommendedDistribution)}
-          icon={<TrendingUp className="w-4 h-4" />}
-          trend="up"
-        />
-        <StatsCard
-          title="Expected Waste"
-          value={`${formatValue(result.expectedWaste)} units`}
-          icon={<AlertTriangle className="w-4 h-4" />}
-          trend="down"
-        />
-        <StatsCard
-          title="Confidence"
-          value={`${(result.confidenceScore * 100).toFixed(0)}%`}
-          icon={<Clock className="w-4 h-4" />}
-        />
+      <div className="stats-grid">
+        <div className="stats-card">
+          <div className="stats-label">
+            <Package className="w-4 h-4" />
+            Total Items
+          </div>
+          <div className="stats-value">
+            {formatValue(totalItems)}
+          </div>
+        </div>
+        <div className="stats-card">
+          <div className="stats-label">
+            <TrendingUp className="w-4 h-4" />
+            Distribution
+          </div>
+          <div className="stats-value">
+            {formatValue(result.recommendedDistribution)}
+            <span className="text-sm text-green-500">↑</span>
+          </div>
+        </div>
+        <div className="stats-card">
+          <div className="stats-label">
+            <AlertTriangle className="w-4 h-4" />
+            Expected Waste
+          </div>
+          <div className="stats-value">
+            {formatValue(result.expectedWaste)} units
+            <span className="text-sm text-red-500">↓</span>
+          </div>
+        </div>
+        <div className="stats-card">
+          <div className="stats-label">
+            <Clock className="w-4 h-4" />
+            Confidence
+          </div>
+          <div className="stats-value">
+            {(result.confidenceScore * 100).toFixed(0)}%
+          </div>
+        </div>
       </div>
     </div>
   );
