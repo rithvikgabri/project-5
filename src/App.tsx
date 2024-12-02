@@ -75,7 +75,7 @@ function App() {
       item: item.name,
       params,
       timestamp: Date.now()
-    }, ...prev].slice(0, 5)); // Keep last 5 notifications
+    }, ...prev].slice(0, 5)); // Last 5 notifications
 
     setFoodItems(prev => [...prev, item]);
     optimizeDistribution([...foodItems, item], params);
@@ -159,21 +159,23 @@ function App() {
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Top Section - Form and Graphs */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Add Food Item */}
           <div className="retro-card p-6">
+            <h2 className="text-xl font-bold mb-6">Add Food Item</h2>
             <FoodItemForm onSubmit={handleAddItem} />
           </div>
           
           {/* Waste Reduction Impact */}
           <div className="retro-card p-6">
+            <h2 className="text-xl font-bold mb-6">Waste Reduction Impact</h2>
             {foodItems.length > 0 && optimizedDistribution.length > 0 ? (
               <WasteReductionGraph
                 items={foodItems}
                 optimizedDistribution={optimizedDistribution}
               />
             ) : (
-              <div className="h-full flex items-center justify-center">
+              <div className="h-[250px] flex items-center justify-center">
                 <p className="text-gray-500">Add items to see waste reduction impact</p>
               </div>
             )}
@@ -181,13 +183,14 @@ function App() {
 
           {/* Distribution Breakdown */}
           <div className="retro-card p-6">
+            <h2 className="text-xl font-bold mb-6">Distribution Breakdown</h2>
             {foodItems.length > 0 && optimizedDistribution.length > 0 ? (
               <DistributionPieChart
                 items={foodItems}
                 optimizedDistribution={optimizedDistribution}
               />
             ) : (
-              <div className="h-full flex items-center justify-center">
+              <div className="h-[250px] flex items-center justify-center">
                 <p className="text-gray-500">Add items to see distribution breakdown</p>
               </div>
             )}
@@ -195,21 +198,26 @@ function App() {
         </div>
 
         {/* Distribution List */}
-        {foodItems.length > 0 && optimizedDistribution.length > 0 && (
-          <div className="mt-6">
-            <DistributionChart
-              items={foodItems}
-              optimizedDistribution={optimizedDistribution}
-              onDeleteItem={handleDeleteItem}
-            />
+        {foodItems.length > 0 && (
+          <div className="mt-8">
+            <div className="retro-card p-6">
+              <h2 className="text-2xl font-bold mb-6">Distribution</h2>
+              <DistributionChart
+                items={foodItems}
+                optimizedDistribution={optimizedDistribution}
+                onDeleteItem={handleDeleteItem}
+              />
+            </div>
           </div>
         )}
 
         {/* Bottom Section - Stats and Results */}
         {optimizationResult && (
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <StatsGrid result={optimizationResult} totalItems={foodItems.length} />
-            <div className="md:col-span-2">
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="retro-card p-6">
+              <StatsGrid result={optimizationResult} totalItems={foodItems.length} />
+            </div>
+            <div className="retro-card p-6 md:col-span-2">
               <OptimizationDisplay result={optimizationResult} />
             </div>
           </div>

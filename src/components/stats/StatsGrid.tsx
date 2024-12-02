@@ -14,8 +14,8 @@ export default function StatsGrid({ result, totalItems }: StatsGridProps) {
   };
 
   return (
-    <div className="retro-card p-6">
-      <h2 className="text-2xl font-bold mb-6 tracking-tight">Current Stats</h2>
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Current Stats</h2>
       <div className="grid grid-cols-2 gap-4">
         <StatsCard
           title="Total Items"

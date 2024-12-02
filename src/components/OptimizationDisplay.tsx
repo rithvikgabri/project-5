@@ -8,12 +8,12 @@ interface OptimizationDisplayProps {
 
 export default function OptimizationDisplay({ result }: OptimizationDisplayProps) {
   return (
-    <div className="retro-card p-6">
-      <h2 className="text-2xl font-bold mb-6 tracking-tight flex items-center">
+    <div>
+      <h2 className="text-2xl font-bold mb-4 flex items-center">
         <TrendingUp className="w-6 h-6 mr-2" />
         Results
       </h2>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between border-2 border-[#2d2d2d] p-3">
           <span>Distribution:</span>
           <span className="font-bold">{result.recommendedDistribution} units</span>

@@ -26,41 +26,38 @@ export default function WasteReductionGraph({ items, optimizedDistribution }: Wa
   });
 
   return (
-    <div className="retro-card p-6">
-      <h2 className="text-2xl font-bold mb-6 tracking-tight">Waste Reduction Impact</h2>
-      <div className="h-[280px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2d2d2d" />
-            <XAxis 
-              dataKey="date" 
-              stroke="#2d2d2d"
-              tick={{ fill: '#2d2d2d' }}
-            />
-            <YAxis 
-              stroke="#2d2d2d"
-              tick={{ fill: '#2d2d2d' }}
-            />
-            <Tooltip contentStyle={CHART_STYLES.tooltip} />
-            <Area
-              type="monotone"
-              dataKey="originalWaste"
-              stroke="#2d2d2d"
-              fill="#2d2d2d"
-              fillOpacity={0.3}
-              name="Original Waste"
-            />
-            <Area
-              type="monotone"
-              dataKey="optimizedWaste"
-              stroke="#2d2d2d"
-              fill="#2d2d2d"
-              fillOpacity={0.7}
-              name="Optimized Waste"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+    <div className="h-[250px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#2d2d2d" />
+          <XAxis 
+            dataKey="date" 
+            stroke="#2d2d2d"
+            tick={{ fill: '#2d2d2d' }}
+          />
+          <YAxis 
+            stroke="#2d2d2d"
+            tick={{ fill: '#2d2d2d' }}
+          />
+          <Tooltip contentStyle={CHART_STYLES.tooltip} />
+          <Area
+            type="monotone"
+            dataKey="originalWaste"
+            stroke="#2d2d2d"
+            fill="#2d2d2d"
+            fillOpacity={0.3}
+            name="Original Waste"
+          />
+          <Area
+            type="monotone"
+            dataKey="optimizedWaste"
+            stroke="#2d2d2d"
+            fill="#2d2d2d"
+            fillOpacity={0.7}
+            name="Optimized Waste"
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </div>
   );
 }
