@@ -21,19 +21,9 @@ export default function FoodItemForm({ onSubmit }: FoodItemFormProps) {
       id: crypto.randomUUID(),
       quantity: Number(formData.quantity),
       expiryDate: new Date(Date.now() + Number(formData.shelfLife) * 24 * 60 * 60 * 1000),
-      humidity: getDefaultHumidity(formData.category)
+      category: formData.category
     } as FoodItem);
     setFormData({ name: '', quantity: '', shelfLife: '', category: 'Dairy' });
-  };
-
-  const getDefaultHumidity = (category: string): number => {
-    switch (category) {
-      case 'Dairy': return 85;
-      case 'Meat': return 82;
-      case 'Produce': return 90;
-      case 'Bakery': return 60;
-      default: return 70;
-    }
   };
 
   return (
