@@ -7,13 +7,7 @@ import WasteReductionGraph from './components/graphs/WasteReductionGraph';
 import DistributionPieChart from './components/graphs/DistributionPieChart';
 import StatsGrid from './components/stats/StatsGrid';
 import { FoodItem, OptimizationResult } from './types';
-import {
-  calculatePoissonProbability,
-  calculatePickupProbability,
-  calculateShelfLifeProbability,
-  calculateExpectedWaste,
-  calculateOptimalDistribution
-} from './utils/probabilityCalculations';
+import { ProbabilityService } from './services/ProbabilityService';
 import { addDays } from 'date-fns';
 import { getHighConfidenceSample, getMediumConfidenceSample, getLowConfidenceSample } from './data/SampleFoodData';
 import { ProbabilityParameters } from './types/ProbabilityTypes';
@@ -95,6 +89,8 @@ function App() {
   const optimizeDistribution = (items: FoodItem[], lastParams?: ProbabilityParameters) => {
     if (items.length === 0) return;
 
+    const probabilityService = new ProbabilityService();
+
     // Example historical data - in real app, this would come from a database
     const historicalData = {
       'Meat': [15, 18, 20, 17, 16],
@@ -103,11 +99,19 @@ function App() {
       'Bakery': [40, 35, 38, 42, 37]
     };
 
-    const distribution = calculateOptimalDistribution(items, historicalData);
-
+    const distribution = probabilityService.calculateOptimalDistribution(items, historicalData);
     const totalWaste = items.reduce((acc, item, index) => {
-      return acc + calculateExpectedWaste(item.quantity, 0.8, distribution[index] / item.quantity);
+      return acc + probabilityService.calculateExpectedWaste(
+        item.quantity, 
+        0.8, 
+        distribution[index] / item.quantity
+      );
     }, 0);
+
+    // Calculate average confidence across all items
+    const avgConfidence = items.reduce((sum, item) => {
+      return sum + probabilityService.calculateConfidenceScore(item);
+    }, 0) / items.length;
 
     const urgency = totalWaste > 20 ? 'high' : totalWaste > 10 ? 'medium' : 'low';
     
@@ -115,7 +119,7 @@ function App() {
     setOptimizationResult({
       recommendedDistribution: Math.floor(distribution.reduce((a, b) => a + b, 0)),
       expectedWaste: Number(totalWaste.toFixed(1)),
-      confidenceScore: 0.85,
+      confidenceScore: avgConfidence,
       urgencyLevel: urgency
     });
   };
