@@ -1,41 +1,24 @@
-import { FoodItem } from '../types/FoodTypes';
-import { poissonProbability, binomialProbability } from '../utils/StatisticalUtils';
+import { FoodItem } from '../types';
 
 export class ProbabilityService {
   /**
    * Calculates the probability of a specific demand level for a food item
    */
   calculateDemandProbability(item: FoodItem, demandLevel: number): number {
-    const { dailyMean } = item.demandStats;
-    return poissonProbability(dailyMean, demandLevel);
+    // Base probability on category and quantity
+    const categoryFactor = this.getCategoryFactor(item.category);
+    const quantityFactor = Math.min(1, item.quantity / 100);
+    return (categoryFactor + quantityFactor) / 2;
   }
 
   /**
    * Calculates pickup success probability based on historical data
    */
   calculatePickupProbability(item: FoodItem): number {
-    const { successCount, totalAttempts } = item.pickupStats;
-    if (totalAttempts === 0) return 0.5; // Default when no data
-    
-    return binomialProbability(successCount, totalAttempts);
-  }
-
-  /**
-   * Calculates remaining shelf life probability considering storage conditions
-   */
-  calculateShelfLifeProbability(item: FoodItem): number {
-    const { baseShelfLife, temperatureRanges, currentCondition } = item.shelfLife;
-    
-    // Find applicable temperature range
-    const range = temperatureRanges.find(r => 
-      currentCondition.temperature >= r.min && 
-      currentCondition.temperature <= r.max
-    );
-    
-    const spoilageMultiplier = range ? range.spoilageMultiplier : 1;
-    const adjustedShelfLife = baseShelfLife / spoilageMultiplier;
-    
-    return Math.max(0, adjustedShelfLife / baseShelfLife);
+    // Base probability on category and expiry date
+    const daysUntilExpiry = Math.ceil((item.expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    const expiryFactor = Math.max(0, Math.min(1, daysUntilExpiry / 14)); // 14 days max
+    return expiryFactor * this.getCategoryFactor(item.category);
   }
 
   /**
@@ -44,35 +27,27 @@ export class ProbabilityService {
   calculateConfidenceScore(item: FoodItem): number {
     const demandConfidence = this.calculateDemandConfidence(item);
     const pickupConfidence = this.calculatePickupConfidence(item);
-    const seasonalConfidence = this.calculateSeasonalConfidence(item);
-    
-    return (demandConfidence + pickupConfidence + seasonalConfidence) / 3;
+    return (demandConfidence + pickupConfidence) / 2;
+  }
+
+  private getCategoryFactor(category: string): number {
+    const factors: { [key: string]: number } = {
+      'Dairy': 0.85,
+      'Meat': 0.75,
+      'Produce': 0.70,
+      'Bakery': 0.65
+    };
+    return factors[category] || 0.5;
   }
 
   private calculateDemandConfidence(item: FoodItem): number {
-    const { historicalDemand, dailyVariance, dailyMean } = item.demandStats;
-    if (historicalDemand.length < 5) return 0.3;
-    
-    // Higher variance = lower confidence
-    const coefficientOfVariation = Math.sqrt(dailyVariance) / dailyMean;
-    return Math.max(0.2, 1 - coefficientOfVariation);
+    // Base confidence on category reliability
+    return this.getCategoryFactor(item.category);
   }
 
   private calculatePickupConfidence(item: FoodItem): number {
-    const { totalAttempts } = item.pickupStats;
-    // More attempts = higher confidence, max out at 100 attempts
-    return Math.min(1, totalAttempts / 100);
-  }
-
-  private calculateSeasonalConfidence(item: FoodItem): number {
-    const { monthly, weekday } = item.seasonalDemand;
-    const variance = this.calculateVariance(monthly.concat(weekday));
-    return Math.max(0.2, 1 - variance);
-  }
-
-  private calculateVariance(numbers: number[]): number {
-    const mean = numbers.reduce((a, b) => a + b) / numbers.length;
-    const squareDiffs = numbers.map(n => Math.pow(n - mean, 2));
-    return squareDiffs.reduce((a, b) => a + b) / numbers.length;
+    // Base confidence on expiry timeline
+    const daysUntilExpiry = Math.ceil((item.expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    return Math.max(0.2, Math.min(1, daysUntilExpiry / 14)); // 14 days max
   }
 } 
