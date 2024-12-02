@@ -148,27 +148,27 @@ function App() {
 
   return (
     <div className="min-h-screen retro-container">
-      <header className="border-b-2 border-[#2d2d2d]">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+      <header className="border-b-2 border-[#2d2d2d] sticky top-0 bg-[#f3ede3] z-10">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6">
           <div className="flex items-center space-x-4">
-            <Utensils className="w-8 h-8" />
-            <h1 className="text-3xl font-bold tracking-tight">FOODIE - for food distribution centers</h1>
+            <Utensils className="w-6 h-6 sm:w-8 sm:h-8" />
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">FOODIE - for food distribution centers</h1>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
         {/* Top Section - Form and Graphs */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Add Food Item */}
-          <div className="retro-card p-6">
-            <h2 className="text-xl font-bold mb-6">Add Food Item</h2>
+          <div className="retro-card p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Add Food Item</h2>
             <FoodItemForm onSubmit={handleAddItem} />
           </div>
           
           {/* Waste Reduction Impact */}
-          <div className="retro-card p-6">
-            <h2 className="text-xl font-bold mb-6">Waste Reduction Impact</h2>
+          <div className="retro-card p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Waste Reduction Impact</h2>
             {foodItems.length > 0 && optimizedDistribution.length > 0 ? (
               <WasteReductionGraph
                 items={foodItems}
@@ -182,8 +182,8 @@ function App() {
           </div>
 
           {/* Distribution Breakdown */}
-          <div className="retro-card p-6">
-            <h2 className="text-xl font-bold mb-6">Distribution Breakdown</h2>
+          <div className="retro-card p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Distribution Breakdown</h2>
             {foodItems.length > 0 && optimizedDistribution.length > 0 ? (
               <DistributionPieChart
                 items={foodItems}
@@ -199,25 +199,23 @@ function App() {
 
         {/* Distribution List */}
         {foodItems.length > 0 && (
-          <div className="mt-8">
-            <div className="retro-card p-6">
-              <h2 className="text-2xl font-bold mb-6">Distribution</h2>
-              <DistributionChart
-                items={foodItems}
-                optimizedDistribution={optimizedDistribution}
-                onDeleteItem={handleDeleteItem}
-              />
-            </div>
+          <div className="retro-card p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Distribution</h2>
+            <DistributionChart
+              items={foodItems}
+              optimizedDistribution={optimizedDistribution}
+              onDeleteItem={handleDeleteItem}
+            />
           </div>
         )}
 
         {/* Bottom Section - Stats and Results */}
         {optimizationResult && (
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="retro-card p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
+            <div className="retro-card p-4 sm:p-6">
               <StatsGrid result={optimizationResult} totalItems={foodItems.length} />
             </div>
-            <div className="retro-card p-6 md:col-span-2">
+            <div className="retro-card p-4 sm:p-6 md:col-span-2">
               <OptimizationDisplay result={optimizationResult} />
             </div>
           </div>
