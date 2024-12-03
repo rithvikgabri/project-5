@@ -12,7 +12,7 @@ interface WasteReductionGraphProps {
 export default function WasteReductionGraph({ items, optimizedDistribution }: WasteReductionGraphProps) {
   const data = items.map((item, index) => {
     const originalWaste = item.quantity;
-    const optimizedWaste = item.quantity - optimizedDistribution[index];
+    const optimizedWaste = Math.max(0, item.quantity - optimizedDistribution[index]);
     const date = format(item.expiryDate, 'MMM dd');
     
     return {

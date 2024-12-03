@@ -89,42 +89,41 @@ export class ProbabilityService {
   }
 
   private calculateMultinomialDemand(categories: CategoryDemand[]): number[] {
-    // Calculate the average demand for each category
-    const categoryAvgs = categories.map(cat => {
-        const categoryAvg = cat.historicalDemand.reduce((a, b) => a + b, 0) / cat.historicalDemand.length;
-        return categoryAvg;
+    // Calculate the average demand and variance for each category
+    const categoryStats = categories.map(cat => {
+      const mean = cat.historicalDemand.reduce((a, b) => a + b, 0) / cat.historicalDemand.length;
+      const variance = cat.historicalDemand.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / cat.historicalDemand.length;
+      return { mean, variance, probability: cat.probability };
     });
 
-    // Calculate the total average demand across all categories
-    const totalAvgDemand = categoryAvgs.reduce((sum, avg) => sum + avg, 0);
+    // Total demand across all categories
+    const totalDemand = categoryStats.reduce((sum, stat) => sum + stat.mean, 0);
 
-    // Calculate probabilities for each category
-    const probabilities = categoryAvgs.map(avg => avg / totalAvgDemand);
+    // Calculate multinomial probabilities
+    const probabilities = categoryStats.map(stat => {
+      // Adjust probability based on category factor and variance
+      const adjustedProb = (stat.mean / totalDemand) * stat.probability;
+      // Normalize for variance - higher variance means less reliable prediction
+      const varianceAdjustment = 1 / (1 + Math.sqrt(stat.variance) / stat.mean);
+      return adjustedProb * varianceAdjustment;
+    });
 
-    // Total quantity to distribute
-    const n = Math.round(totalAvgDemand);
+    // Normalize probabilities to sum to 1
+    const sumProb = probabilities.reduce((a, b) => a + b, 0);
+    const normalizedProbs = probabilities.map(p => p / sumProb);
 
-    // Allocate demands using standard multinomial expectations
-    const result = probabilities.map(p => Math.round(n * p));
+    // Calculate allocation using multinomial expectation
+    const n = Math.round(totalDemand);
+    const baseAllocation = normalizedProbs.map(p => Math.round(n * p));
 
-    // Adjust for rounding errors to ensure total sums to n
-    const totalAllocated = result.reduce((sum, count) => sum + count, 0);
-    let difference = n - totalAllocated;
-
-    // Adjust counts to correct the total
-    for (let i = 0; difference !== 0 && i < result.length; i++) {
-        if (difference > 0) {
-            result[i]++;
-            difference--;
-        } else if (difference < 0 && result[i] > 0) {
-            result[i]--;
-            difference++;
-        }
-    }
-
-    return result;
-}
-
+    // Adjust for minimum viable quantities and maximum capacity
+    return baseAllocation.map((amount, i) => {
+      const category = categories[i];
+      const minViable = Math.ceil(categoryStats[i].mean * 0.2); // At least 20% of average
+      const maxCapacity = Math.ceil(categoryStats[i].mean * 1.5); // At most 150% of average
+      return Math.min(maxCapacity, Math.max(minViable, amount));
+    });
+  }
 
   private calculateBetaPickupRate(successes: number, failures: number): number {
     const alpha = successes + 1;
