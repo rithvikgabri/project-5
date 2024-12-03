@@ -15,7 +15,7 @@ export default function OptimizationDisplay({ result }: OptimizationDisplayProps
       </h2>
       <div className="space-y-3">
         <div className="flex items-center justify-between border-2 border-[#2d2d2d] p-3">
-          <span>Distribution:</span>
+          <span>Daily Distribution:</span>
           <span className="font-bold">{result.recommendedDistribution} units</span>
         </div>
         <div className="flex items-center justify-between border-2 border-[#2d2d2d] p-3">
